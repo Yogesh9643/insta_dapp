@@ -41,6 +41,7 @@ class App extends Component {
      this.setState({decentragram})
      const imageCount= await decentragram.methods.imageCount().call()
      this.setState({imageCount})
+     this.setState({loading:false})
     }
     else{
       window.alert('Decentragram contract not deployed to detected network')
@@ -79,7 +80,7 @@ class App extends Component {
         { this.state.loading
           ? <div id="loader" className="text-center mt-5"><p>Loading...</p></div>
           : <Main
-            // Code...
+              captureFile={this.captureFile}
             />
           }
         )
