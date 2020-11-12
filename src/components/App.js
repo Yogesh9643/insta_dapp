@@ -6,6 +6,9 @@ import Decentragram from '../abis/Decentragram.json'
 import Navbar from './Navbar'
 import Main from './Main'
 
+const ipfsClient= require('ipfs-http-client')
+
+const ipfs = ipfsClient({host:'ipfs.infura.io',port:5001,protocol:'https'})
 
 class App extends Component {
 
@@ -63,6 +66,22 @@ class App extends Component {
     }
   }
 
+  uploadImage= description=>{
+    console.log("submitting to ipfs ... ")
+
+    ipfs.add(this.state.buffer,(error,result)=>{
+      console.log('Ipfs result', result)
+      if(error){
+        console.error(error)
+        return
+      }
+      this.setState({loading:true})
+      this.state.decentragram.methods.uploadImage(result[0].hash, description).send({from:this.state.account}).on('transactionHash', (hash)=>{
+        this.setState({loading:false})
+      })
+    })
+  }
+
   constructor(props) {
     super(props)
     this.state = {
@@ -81,6 +100,7 @@ class App extends Component {
           ? <div id="loader" className="text-center mt-5"><p>Loading...</p></div>
           : <Main
               captureFile={this.captureFile}
+              uploadImage={this.uploadImage}
             />
           }
         )
